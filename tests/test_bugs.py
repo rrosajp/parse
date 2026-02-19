@@ -101,3 +101,21 @@ def test_unused_left_alignment_bug():
 def test_match_trailing_newline():
     r = parse.parse("{}", "test\n")
     assert r[0] == "test\n"
+
+
+def test_microsecond_precision_issue162():
+    # fractional seconds that previously suffered floating-point rounding
+    r = parse.parse("{:ti}", "2023-10-14T15:09:08.501902Z")
+    assert r[0].microsecond == 501902
+
+    # fewer than 6 fractional digits should be zero-padded
+    r = parse.parse("{:ti}", "2023-10-14T15:09:08.1Z")
+    assert r[0].microsecond == 100000
+
+    # exactly 6 fractional digits
+    r = parse.parse("{:ti}", "2023-10-14T15:09:08.123456Z")
+    assert r[0].microsecond == 123456
+
+    # more than 6 fractional digits should be truncated
+    r = parse.parse("{:ti}", "2023-10-14T15:09:08.1234567Z")
+    assert r[0].microsecond == 123456
