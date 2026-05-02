@@ -27,11 +27,11 @@ email = "hey@wimglenn.com"
 [project.urls]
 homepage = "https://github.com/r1chardj0n3s/parse"
 
-[tool.setuptools]
-py-modules = ["parse"]
-
 [tool.setuptools.dynamic]
 version = {attr = "parse.__version__"}
 
 [tool.distutils.bdist_wheel]
 universal = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=parse --cov-report=term-missing --cov-append --cov-branch --doctest-modules --doctest-glob=README.rst"
