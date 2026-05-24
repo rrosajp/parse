@@ -727,10 +727,11 @@ class Parser(object):
             self._group_index += 1
             conv[group] = percentage
         elif type == "f":
-            s = r"\d*\.\d+"
+            # precision 0 formats without a decimal point (e.g. format(20.0, ".0f") == "20")
+            s = r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
             conv[group] = convert_first(float)
         elif type == "F":
-            s = r"\d*\.\d+"
+            s = r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
             conv[group] = convert_first(Decimal)
         elif type == "e":
             s = r"\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF"
