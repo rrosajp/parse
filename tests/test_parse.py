@@ -278,6 +278,11 @@ def test_numbers():
     y("a {:f} b", "a -.121 b", -0.121)
     n("a {:f} b", "a 12 b", None)
 
+    # precision 0 formats without a decimal point, so parse must accept it (issue #159)
+    y("a {:.0f} b", "a 12 b", 12.0)
+    y("foo_{:02.0f}t", "foo_20t", 20.0)
+    n("a {:.0f} b", "a 12.0 b", None)
+
     y("a {:e} b", "a 1.0e10 b", 1.0e10)
     y("a {:e} b", "a .0e10 b", 0.0e10)
     y("a {:e} b", "a 1.0E10 b", 1.0e10)
