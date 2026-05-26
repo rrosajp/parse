@@ -442,6 +442,7 @@ To run the tests locally:
 Changelog
 ---------
 
+- 1.22.1 Parse zero-precision floats formatted without a decimal point (thanks @SAY-5)
 - 1.22.0 Convert into a package and add type stubs (thanks @moi90)
 - 1.21.1 Fix microsecond precision loss in timestamp parsing (thanks @karthiksai109)
 - 1.21.0 Allow grouping char (,_) in decimal format string (thanks @moi90)
