@@ -11,7 +11,7 @@ from decimal import Decimal
 from functools import partial
 
 
-__version__ = "1.22.1"
+__version__ = "1.22.2"
 __all__ = ["parse", "search", "findall", "with_pattern"]
 
 log = logging.getLogger(__name__)
@@ -726,21 +726,17 @@ class Parser(object):
             s = r"\d+(\.\d+)?%"
             self._group_index += 1
             conv[group] = percentage
-        elif type == "f":
+        elif type in ("f", "F"):
             # precision 0 formats without a decimal point (e.g. format(20.0, ".0f") == "20")
             # Non-capturing group so the shared "[-+ ]?" sign prefix (added below
             # for numeric types) stays in front of the whole alternation. Without
             # it, "[-+ ]?\d*\.\d+|nan|..." would bind the sign to the first branch
             # only, breaking negative parsing. nan/inf match the e/g types too.
-            s = r"(?:%s|nan|NAN|inf|INF)" % (
-                r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
-            )
-            conv[group] = convert_first(float)
-        elif type == "F":
-            s = r"(?:%s|nan|NAN|inf|INF)" % (
-                r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
-            )
-            conv[group] = convert_first(Decimal)
+            if format.get("precision") == "0":
+                s = r"(?:\d+|nan|NAN|inf|INF)"
+            else:
+                s = r"(?:\d*\.\d+|nan|NAN|inf|INF)"
+            conv[group] = convert_first(float if type == "f" else Decimal)
         elif type in ("e", "E"):
             s = r"\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF"
             conv[group] = convert_first(float)
