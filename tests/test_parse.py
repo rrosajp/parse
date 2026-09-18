@@ -3,6 +3,7 @@ import sys
 from datetime import date
 from datetime import datetime
 from datetime import time
+from decimal import Decimal
 
 import pytest
 
@@ -277,6 +278,19 @@ def test_numbers():
     y("a {:f} b", "a .121 b", 0.121)
     y("a {:f} b", "a -.121 b", -0.121)
     n("a {:f} b", "a 12 b", None)
+
+    # issue249: {:F} is Decimal and, like {:f}, must accept a sign.
+    y("a {:F} b", "a 12.0 b", Decimal("12.0"), str_equals=True)
+    y("a {:F} b", "a -12.1 b", Decimal("-12.1"), str_equals=True)
+    y("a {:F} b", "a +12.1 b", Decimal("12.1"), str_equals=True)
+
+    # issue249: {:f}/{:F} accept nan/inf, the way {:e}/{:g} already do.
+    y("a {:f} b", "a nan b", float("nan"), str_equals=True)
+    y("a {:f} b", "a inf b", float("inf"), str_equals=True)
+    y("a {:f} b", "a -inf b", float("-inf"), str_equals=True)
+    y("a {:F} b", "a nan b", Decimal("nan"), str_equals=True)
+    y("a {:F} b", "a inf b", Decimal("inf"), str_equals=True)
+    y("a {:F} b", "a -inf b", Decimal("-inf"), str_equals=True)
 
     # precision 0 formats without a decimal point, so parse must accept it (issue #159)
     y("a {:.0f} b", "a 12 b", 12.0)

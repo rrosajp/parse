@@ -33,7 +33,10 @@ def test_named_typed():
 def test_numbered():
     _test_expression("{0}", r"(.+?)")
     _test_expression("{0} {1}", r"(.+?) (.+?)")
-    _test_expression("{0:f} {1:f}", r"([-+ ]?\d*\.\d+) ([-+ ]?\d*\.\d+)")
+    _test_expression(
+        "{0:f} {1:f}",
+        r"([-+ ]?(?:\d*\.\d+|nan|NAN|inf|INF)) ([-+ ]?(?:\d*\.\d+|nan|NAN|inf|INF))",
+    )
 
 
 def test_bird():

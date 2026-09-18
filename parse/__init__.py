@@ -696,7 +696,7 @@ class Parser(object):
 
         # figure type conversions, if any
         type = format["type"]
-        is_numeric = type and type in "n%fegdobxEGX"
+        is_numeric = type and type in "n%fFegdobxEGX"
         conv = self._type_conversions
         if type in self._extra_types:
             type_converter = self._extra_types[type]
@@ -728,10 +728,18 @@ class Parser(object):
             conv[group] = percentage
         elif type == "f":
             # precision 0 formats without a decimal point (e.g. format(20.0, ".0f") == "20")
-            s = r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
+            # Non-capturing group so the shared "[-+ ]?" sign prefix (added below
+            # for numeric types) stays in front of the whole alternation. Without
+            # it, "[-+ ]?\d*\.\d+|nan|..." would bind the sign to the first branch
+            # only, breaking negative parsing. nan/inf match the e/g types too.
+            s = r"(?:%s|nan|NAN|inf|INF)" % (
+                r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
+            )
             conv[group] = convert_first(float)
         elif type == "F":
-            s = r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
+            s = r"(?:%s|nan|NAN|inf|INF)" % (
+                r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
+            )
             conv[group] = convert_first(Decimal)
         elif type in ("e", "E"):
             s = r"\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF"
